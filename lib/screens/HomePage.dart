@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sample_flutter_cli/authentication.dart';
+import 'package:sample_flutter_cli/screens/loginPage.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -14,7 +16,8 @@ class _HomePageState extends State<HomePage> {
       body: Center(
           child: ElevatedButton(
             onPressed: () {
-
+              AuthenticationHelper()
+                  .signOut().then((result)=>Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginPage())));
             },
             child: const Text('LogOut'),
 
