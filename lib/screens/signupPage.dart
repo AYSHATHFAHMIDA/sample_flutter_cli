@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sample_flutter_cli/screens/loginPage.dart';
 
+import '../authentication.dart';
+
 class SignUp extends StatefulWidget {
   @override
   State<SignUp> createState() => _SignUpState();
@@ -10,8 +12,6 @@ class _SignUpState extends State<SignUp> {
   final _formKey = GlobalKey<FormState>();
   String? email;
   String? password;
-  String? name;
-  bool agree = false;
   bool _obsscureText = false;
   final pass_controller = TextEditingController();
 
@@ -67,21 +67,48 @@ class _SignUpState extends State<SignUp> {
                     password=value;
                   },
                   obscureText: !_obsscureText,
+                  validator: (value){
+                    if(value!.isEmpty){
+                      return 'please enter the password';
+                    }
+                    return null;
+                  },
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   decoration: InputDecoration(
-                    hintText: 'confirm password',
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    labelText: 'confirm password',
                     border: OutlineInputBorder(),
                   ),
+                  obscureText: true,
                   validator: (value){
-
+                    if(value!=pass_controller.text){
+                      return 'password mismatch';
+                    }
+                    return null;
                   },
                 ),
               ),
-              ElevatedButton(onPressed: () {}, child: const Text('signup')),
+              ElevatedButton(onPressed: () {
+                if(_formKey.currentState!.validate()){
+                  _formKey.currentState!.save();
+
+                  AuthenticationHelper()
+                  .SignUp(email:email!,password:password!)
+                  .then((result){
+                    if(result==null){
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginPage()));
+                    }else{
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar(
+                        context:Text(result,style: const TextStyle(fontSize: 16),)
+                      ));
+                    }
+                  });
+                }
+              }, child: const Text('signup')),
               TextButton(
                   onPressed: () {
                     Navigator.of(context).pushReplacement(new MaterialPageRoute(
